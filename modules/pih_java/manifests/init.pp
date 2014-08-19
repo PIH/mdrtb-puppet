@@ -7,6 +7,7 @@ class pih_java {
 	file { $tmp_oracle_java_installer:
 		ensure  => file,
 		source	=> "puppet:///modules/pih_java/${oracle_java_installer}",		
+		mode    => '0755',
 	}
 
 }
