@@ -1,0 +1,3 @@
+sitename: common
+mysql_sys_user_group: mysql
+mysql_sys_user_name: mysql
