@@ -8,7 +8,7 @@ class pih_mysql {
 	$mysql_dest = "/usr/local/${mysql_tar}"
 
 	group { $mysql_sys_user_group:
-		ensure => "present",
+		ensure => 'present',
 	} ->
 
 	user { $mysql_sys_user_name:
@@ -19,7 +19,7 @@ class pih_mysql {
 	file { $mysql_home:
 		ensure  => directory,
 		owner	=> $mysql_sys_user_name,
-		group 	=> mysql_sys_user_group,
+		group 	=> $mysql_sys_user_group,
 		recurse	=> true,
 	} -> 
 	
@@ -33,6 +33,19 @@ class pih_mysql {
 		cwd     => '/usr/local',
 		command => "tar -xzf ${mysql_dest} -C ${mysql_home}",		
 		timeout	=> 0, 
+	} ->
+
+	exec { 'change-mysql-ownership':
+		cwd     => $mysql_home,
+		command => "chown -R ${mysql_sys_user_name} .&&chgrp -R ${mysql_sys_user_group} .",		
+		timeout	=> 0, 
+	} ->
+
+	exec { 'install-mysql':
+		cwd     => $mysql_home,
+		command => "scripts/mysql_install_db --user=mysql",		
+		timeout	=> 0, 
 	}
+
 
 }
