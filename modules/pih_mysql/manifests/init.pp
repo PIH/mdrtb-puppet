@@ -23,6 +23,10 @@ class pih_mysql {
 		recurse	=> true,
 	} -> 
 	
+	package { 'libaio1':
+		ensure  => latest,
+	} ->
+
 	file { $mysql_dest:
 		ensure  => file,
 		source	=> "puppet:///modules/pih_mysql/${mysql_tar}",		
@@ -42,10 +46,33 @@ class pih_mysql {
 	} ->
 
 	exec { 'install-mysql':
+		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		cwd     => $mysql_home,
-		command => "scripts/mysql_install_db --user=mysql",		
+		command => "scripts/mysql_install_db --no-defaults --user=mysql --basedir=${mysql_home} --datadir=${mysql_home}/data",	
+		logoutput	=> true,
 		timeout	=> 0, 
-	}
+	} -> 
 
+	exec { 'change-mysql-ownership-to-root':
+		cwd     => $mysql_home,
+		command => "chown -R root .&&chown -R ${mysql_sys_user_name} data",		
+		timeout	=> 0, 
+		logoutput	=> true,
+	} ->	
+
+	exec { 'configure-mysql':
+		cwd     => $mysql_home,
+		command => "bash -c ${mysql_home}/bin/mysqld_safe --user=mysql &",		
+		logoutput	=> true,
+		timeout	=> 0, 
+	} -> 
+
+	file { '/etc/init.d/mysql.server':
+		ensure  => present,
+		source  => "${mysql_home}/support-files/mysql.server",
+		mode    => '0755',
+		owner   => $mysql_sys_user_name,
+		group   => $mysql_sys_user_group,    
+	}	
 
 }
