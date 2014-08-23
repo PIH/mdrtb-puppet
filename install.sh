@@ -1,3 +1,5 @@
+#! /bin/bash
+
 puppet apply -v \
   --detailed-exitcodes \
   --logdest=console \
