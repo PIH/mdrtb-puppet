@@ -22,12 +22,9 @@ class pih_mysql {
 	} ->
 
 	file { $mysql_home:
-		ensure  => directory,
-		owner	=> $mysql_sys_user_name,
-		group 	=> $mysql_sys_user_group,
-		recurse	=> true,
+		ensure  => directory,				
 	} -> 
-	
+
 	package { 'libaio1':
 		ensure  => latest,
 	} ->
@@ -39,6 +36,7 @@ class pih_mysql {
 	} -> 
 
 	exec { 'unzip-mysql':
+		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		cwd     => '/usr/local',
 		command => "tar -xzf ${mysql_dest} -C ${mysql_home}",	
 		logoutput	=> false,	
@@ -46,6 +44,7 @@ class pih_mysql {
 	} ->
 
 	exec { 'change-mysql-ownership':
+		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		cwd     => $mysql_home,
 		command => "chown -R ${mysql_sys_user_name} .&&chgrp -R ${mysql_sys_user_group} .",		
 		logoutput	=> false,
@@ -86,6 +85,7 @@ class pih_mysql {
 	} -> 
 
 	exec { 'change-mysql-ownership-to-root':
+		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		cwd     => $mysql_home,
 		command => "chown -R root .&&chown -R ${mysql_sys_user_name} data",		
 		timeout	=> 0, 
@@ -118,6 +118,7 @@ class pih_mysql {
 	} -> 
 
 	exec { 'update_root_password':
+		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		path	=> $::path,
 		cwd     => $mysql_home,
 		command => "${reset_mysql_password_sh}",		
