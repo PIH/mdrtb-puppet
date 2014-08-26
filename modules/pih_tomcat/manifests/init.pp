@@ -8,9 +8,13 @@ class pih_tomcat (
 
   require pih_java
 
+  $java_home = $pih_java::java_home
   $tomcat_zip = 'apache-tomcat-6.0.36.tar.gz'
   $dest_tomcat_zip = "/usr/local/${tomcat_zip}"
   $version = '6.0.36'
+
+
+  notify{"java_home= ${java_home}": }
 
   user { $tomcat:
     ensure => 'present',
@@ -33,7 +37,7 @@ class pih_tomcat (
 
   exec { 'tomcat-unzip':
     cwd     => '/usr/local',
-    command => "tar --group=${tomcat} --owner=${tomcat} -xzf ${dest_tomcat_zip},
+    command => "tar --group=${tomcat} --owner=${tomcat} -xzf ${dest_tomcat_zip}",
     unless  => "test -d /usr/local/apache-tomcat-${version}",   
   } ->
 
@@ -53,7 +57,7 @@ class pih_tomcat (
 
   file { "/etc/init.d/${tomcat}":
     ensure  => file,
-    source  => "puppet:///modules/pih_tomcat/init",
+    source  => template("pih_tomcat/init.erb")
   } ->
 
   file { "/etc/default/${tomcat}":
