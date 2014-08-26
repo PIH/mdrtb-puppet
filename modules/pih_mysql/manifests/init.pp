@@ -52,6 +52,30 @@ class pih_mysql {
 		timeout	=> 0, 
 	} ->
 
+	file { "/etc/mysql":
+		ensure  => directory,
+		owner   => $mysql_sys_user_name,
+		group   => $mysql_sys_user_group,
+		mode    => '0755',		
+	} ->
+
+	file { "/etc/mysql/conf.d":
+		ensure  => directory,
+		owner   => $mysql_sys_user_name,
+		group   => $mysql_sys_user_group,
+		mode    => '0755',		
+	} ->
+
+	file { '/etc/mysql/my.cnf':
+		ensure  => file,
+		content => template('pih_mysql/my.cnf.erb'),		
+	} ->
+
+	file { '/usr/bin/mysqladmin':
+		ensure => link,
+		target => "${mysql_home}/bin/mysqladmin",		
+	} ->
+
 	exec { 'install-mysql':
 		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
 		cwd     => $mysql_home,
@@ -70,7 +94,7 @@ class pih_mysql {
 
 	file { '/usr/bin/mysql':
 		ensure => link,
-		target => '${mysql_home}/bin/mysql',	
+		target => "${mysql_home}/bin/mysql",	
 	} ->
 
 	file { '/etc/init.d/mysql.server':
@@ -84,13 +108,13 @@ class pih_mysql {
 	file { $update_root_password_sql: 
 		ensure  => present,		
 		mode 	=> '0755', 
-		content	=> template('openmrs/updateRootPassword.sql.erb'),	
+		content	=> template('pih_mysql/updateRootPassword.sql.erb'),	
 	} ->
 
 	file { $reset_mysql_password_sh: 
 		ensure  => present,		
 		mode 	=> '0755', 
-		content	=> template('openmrs/resetMysqlPassword.sh.erb'),	
+		content	=> template('pih_mysql/resetMysqlPassword.sh.erb'),	
 	} -> 
 
 	exec { 'update_root_password':
@@ -99,5 +123,11 @@ class pih_mysql {
 		command => "${reset_mysql_password_sh}",		
 		timeout	=> 0, 
 		logoutput	=> true,
-	} 		
+	} -> 
+
+	service { 'mysqld':
+		ensure  => running,
+		name    => 'mysql.server',
+		enable  => true,
+	}	 		
 }
