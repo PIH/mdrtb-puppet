@@ -5,9 +5,13 @@ class openmrs (
     $openmrs_auto_update_database = hiera('openmrs_auto_update_database'),    
     $tomcat = hiera('tomcat'),
     
-
   ){
 
+  require pih_java
+  require pih_mysql
+  require pih_tomcat
+
+  $runtime_properties_file = "/home/${tomcat}/.OpenMRS/openmrs-runtime.properties"
 
   file { "/home/${tomcat}/.OpenMRS":
     ensure  => directory,
@@ -15,43 +19,15 @@ class openmrs (
     group   => $tomcat,
     mode    => '0755',
     require => User[$tomcat]
-  }
+  } ->
 
-  file { "/home/${tomcat}/.OpenMRS/mirebalais.properties":
+  file { $runtime_properties_file:
     ensure  => present,
-    content => template('openmrs/mirebalais.properties.erb'),
+    content => template('openmrs/openmrs-runtime.properties.erb'),
     owner   => $tomcat,
     group   => $tomcat,
-    mode    => '0644',
-    require => File["/home/${tomcat}/.OpenMRS"]
+    mode    => '0644',    
   }
 
-  file { "/home/${tomcat}/.OpenMRS/feature_toggles.properties":
-    ensure  => present,
-    content => template('openmrs/feature_toggles.properties.erb'),
-    owner   => $tomcat,
-    group   => $tomcat,
-    mode    => '0644',
-    require => File["/home/${tomcat}/.OpenMRS"]
-  }
-
-  file { "/home/${tomcat}/.OpenMRS/mirebalais-runtime.properties":
-    ensure  => present,
-    content => template('openmrs/mirebalais-runtime.properties.erb'),
-    owner   => $tomcat,
-    group   => $tomcat,
-    mode    => '0644',
-    require => File["/home/${tomcat}/.OpenMRS"]
-  }
-
-   # install file to customize apps for production (removing export apps) or reporting server (only including export apps)
-   file { "/home/${tomcat}/.OpenMRS/custom-appframework-config.json":
-	ensure => present,
-	source => "puppet:///modules/openmrs/${$custom_appframework_config_filename}",
-	owner   => $tomcat,
-	group   => $tomcat,
-	mode    => '0644',
-	require => File["/home/${tomcat}/.OpenMRS"]
-   }
 
 }
