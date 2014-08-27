@@ -11,15 +11,42 @@ class openmrs (
   require pih_mysql
   require pih_tomcat
 
-  $runtime_properties_file = "/home/${tomcat}/.OpenMRS/openmrs-runtime.properties"
+  $tomcat_home = $pih_tomcat::tomcat_home
+  $openmrs_folder = "/home/${tomcat}/.OpenMRS"
+  $runtime_properties_file = "${openmrs_folder}/openmrs-runtime.properties"
+  $modules_tar = "modules.tar.gz"
+  $dest_modules_tar = "${openmrs_folder}/${modules_tar}"
 
-  file { "/home/${tomcat}/.OpenMRS":
+  $dest_openmrs_war = "${tomcat_home}/webapps/openmrs.war"
+
+  notify{"tomcat_home= ${tomcat_home}": }
+
+  file { $openmrs_folder:
     ensure  => directory,
     owner   => $tomcat,
     group   => $tomcat,
     mode    => '0755',
     require => User[$tomcat]
   } ->
+
+  file { $dest_modules_tar:
+    ensure  => file,
+    source  => "puppet:///modules/openmrs/${modules_tar}",    
+    mode    => '0755',
+  } -> 
+
+  exec { 'modules-unzip':
+    cwd     => '/usr/local',
+    command => "tar --group=${tomcat} --owner=${tomcat} -xzf ${dest_modules_tar}",    
+  } ->
+
+  file { $dest_openmrs_war:
+    ensure  => file,
+    source  => "puppet:///modules/openmrs/openmrs.war",    
+    mode    => '0755',
+    owner   => $tomcat,
+    group   => $tomcat,
+  } -> 
 
   file { $runtime_properties_file:
     ensure  => present,

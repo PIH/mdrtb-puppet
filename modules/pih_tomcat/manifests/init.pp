@@ -12,6 +12,7 @@ class pih_tomcat (
   $tomcat_zip = 'apache-tomcat-6.0.36.tar.gz'
   $dest_tomcat_zip = "/usr/local/${tomcat_zip}"
   $version = '6.0.36'
+  $tomcat_home = /usr/local/apache-tomcat-${version}
 
 
   notify{"java_home= ${java_home}": }
@@ -38,7 +39,7 @@ class pih_tomcat (
   exec { 'tomcat-unzip':
     cwd     => '/usr/local',
     command => "tar --group=${tomcat} --owner=${tomcat} -xzf ${dest_tomcat_zip}",
-    unless  => "test -d /usr/local/apache-tomcat-${version}",   
+    unless  => "test -d ${tomcat_home}",   
   } ->
 
   file { "/usr/local/apache-tomcat-${version}":
