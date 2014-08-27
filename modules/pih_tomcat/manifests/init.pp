@@ -57,7 +57,8 @@ class pih_tomcat (
 
   file { "/etc/init.d/${tomcat}":
     ensure  => file,
-    source  => template("pih_tomcat/init.erb")
+    mode    => '0755',
+    content => template("pih_tomcat/init.erb")
   } ->
 
   file { "/etc/default/${tomcat}":

@@ -6,6 +6,34 @@ $ sudo dpkg -i puppetlabs-release-precise.deb
 $ sudo apt-get update
 
 
+Install Java 
+http://astoryworthtelling.wordpress.com/2012/04/22/installing-sun-java-on-ubuntu-12-04-x64/
+----------------------------------------
+It’s a little annoying that ubuntu does not provide a sun java (I don’t think iced-tea works all that well at the moment).  I found that this guide worked pretty well.  Of course you don’t need to install in /opt/java/64.
+
+Go here and grab the linux x64 file (not the rpm).  And save it somewhere on your machine.
+
+Then make the directory where java will end up living, and change into it: sudo mkdir -p /opt/java/64 && cd /opt/java/64
+
+Move the file you’ve just downloaded to this directory (you’ll need sudo-powers again): mv ~/Downloads/jre-6u31-linux-x64.bin /opt/java/64
+
+And make the file executable: sudo chmod +x jre-6u31-linux-x64.bin
+
+And run it (you might have to agree to the license): sudo ./jre-6u31-linux-x64.bin
+
+Set this java to the default:
+sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/64/jre1.6.0_31/bin/java" 1
+sudo update-alternatives --set java /opt/java/64/jre1.6.0_31/bin/java
+
+And setup for the browser:
+mkdir -pv ~/.mozilla/plugins
+sudo apt-get remove icedtea6-plugin
+rm -v ~/.mozilla/plugins/libnpjp2.so
+ln -s /opt/java/64/jre1.6.0_31/lib/amd64/libnpjp2.so ~/.mozilla/plugins/
+
+Slightly modified from: http://sites.google.com/site/easylinuxtipsproject/java
+
+
 Install mysql (https://dev.mysql.com/doc/refman/5.6/en/binary-installation.html)
 ---------------------------------------------------------------------------------
 shell> groupadd mysql
@@ -24,6 +52,21 @@ shell> bin/mysqld_safe --user=mysql &
 shell> cp support-files/mysql.server /etc/init.d/mysql.server
 
 
+1.Start the mysql server instance or daemon with the --skip-grant-tables option. (security setting)
+
+$ mysqld --skip-grant-tables
+2.Then Execute these statements.
+
+$ mysql -u root mysql
+$mysql> UPDATE user SET Password=PASSWORD('openmrs') where USER='root';
+$mysql> FLUSH PRIVILEGES;
+3.Finally, restart the instance/daemon without the --skip-grant-tables option.
+
+$ /etc/init.d/mysql restart
+4.You should be able to connect with your new password.
+
+$ mysql -u root -p
+Enter password: my_password
 
 To start mysqld at boot time you have to copy
 support-files/mysql.server to the right place for your system

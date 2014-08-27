@@ -7,4 +7,5 @@ node default {
   include pih_java
   include pih_mysql
   include pih_tomcat
+  include openmrs
 }
