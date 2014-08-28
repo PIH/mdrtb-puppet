@@ -1,10 +1,10 @@
 class openmrs (
+    $mysql_root_password = hiera('mysql_root_password')
     $openmrs_db = hiera('openmrs_db'),
     $openmrs_db_user = hiera('openmrs_db_user'),
     $openmrs_db_password = hiera('openmrs_db_password'),
     $openmrs_auto_update_database = hiera('openmrs_auto_update_database'),    
-    $tomcat = hiera('tomcat'),
-    
+    $tomcat = hiera('tomcat'),    
   ){
 
   require pih_java
@@ -13,10 +13,14 @@ class openmrs (
 
   $tomcat_home = $pih_tomcat::tomcat_home
   $openmrs_folder = "/home/${tomcat}/.OpenMRS"
+  $openmrs_db_folder = "${openmrs_folder}/db"
   $runtime_properties_file = "${openmrs_folder}/openmrs-runtime.properties"
-  $modules_tar = "modules.tar.gz"
+  $openmrs_db_tar = "openmrs.tar.gz"
+  $dest_openmrs_db = "${openmrs_db_folder}/openmrs.tar.gz"
+  $openmrs_create_db_sql = "${openmrs_db_folder}/dropAndCreateDb.sql"
+  $openmrs_dump_sql = "${openmrs_db_folder}/openmrs.sql"
+  $modules_tar = "modules.tar.gz" 
   $dest_modules_tar = "${openmrs_folder}/${modules_tar}"
-
   $dest_openmrs_war = "${tomcat_home}/webapps/openmrs.war"
 
   notify{"tomcat_home= ${tomcat_home}": }
@@ -28,6 +32,25 @@ class openmrs (
     group   => $tomcat,
     mode    => '0755',
     require => User[$tomcat]
+  } ->
+
+  file { $openmrs_db_folder:
+    ensure  => directory,    
+  } ->
+
+  file { $dest_openmrs_db:
+    ensure  => file,    
+    source  => "puppet:///modules/openmrs/${openmrs_db_tar}",        
+  } -> 
+
+  exec { 'openmrs-db-unzip':
+    cwd     => $openmrs_db_folder,
+    command => "tar -xzf ${dest_openmrs_db}",    
+  } -> 
+
+  file { $openmrs_create_db_sql: 
+    ensure  => present,  
+    content => template('openmrs/dropAndCreateDb.sql.erb'), 
   } ->
 
   file { $dest_modules_tar:
