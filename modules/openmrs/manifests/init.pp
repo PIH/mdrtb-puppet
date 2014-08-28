@@ -1,5 +1,5 @@
 class openmrs (
-    $mysql_root_password = hiera('mysql_root_password')
+    $mysql_root_password = hiera('mysql_root_password'),
     $openmrs_db = hiera('openmrs_db'),
     $openmrs_db_user = hiera('openmrs_db_user'),
     $openmrs_db_password = hiera('openmrs_db_password'),
@@ -18,6 +18,7 @@ class openmrs (
   $openmrs_db_tar = "openmrs.tar.gz"
   $dest_openmrs_db = "${openmrs_db_folder}/openmrs.tar.gz"
   $openmrs_create_db_sql = "${openmrs_db_folder}/dropAndCreateDb.sql"
+  $restore_openmrs_db_sh = "${openmrs_db_folder}/restoreOpenMRS-db.sh"
   $openmrs_dump_sql = "${openmrs_db_folder}/openmrs.sql"
   $modules_tar = "modules.tar.gz" 
   $dest_modules_tar = "${openmrs_folder}/${modules_tar}"
@@ -51,6 +52,19 @@ class openmrs (
   file { $openmrs_create_db_sql: 
     ensure  => present,  
     content => template('openmrs/dropAndCreateDb.sql.erb'), 
+  } ->
+
+  file { $restore_openmrs_db_sh: 
+    ensure  => present,  
+    content => template('openmrs/restoreOpenMRS-db.sh.erb'), 
+    mode    => '0755',
+  } ->
+
+  exec { 'recreate-and-import-openmrs-db':
+    cwd     => $openmrs_db_folder,
+    command => "${restore_openmrs_db_sh}",    
+    logoutput => true, 
+    timeout => 0, 
   } ->
 
   file { $dest_modules_tar:
