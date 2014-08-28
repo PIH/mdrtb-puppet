@@ -12,7 +12,7 @@ class pih_tomcat (
   $tomcat_zip = 'apache-tomcat-6.0.36.tar.gz'
   $dest_tomcat_zip = "/usr/local/${tomcat_zip}"
   $version = '6.0.36'
-  $tomcat_home = /usr/local/apache-tomcat-${version}
+  $tomcat_home = "/usr/local/apache-tomcat-${version}"
 
 
   notify{"java_home= ${java_home}": }

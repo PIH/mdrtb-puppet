@@ -20,6 +20,7 @@ class openmrs (
   $dest_openmrs_war = "${tomcat_home}/webapps/openmrs.war"
 
   notify{"tomcat_home= ${tomcat_home}": }
+  notify{"tomcat= ${tomcat}": }
 
   file { $openmrs_folder:
     ensure  => directory,
@@ -31,13 +32,23 @@ class openmrs (
 
   file { $dest_modules_tar:
     ensure  => file,
+    owner   => $tomcat,
+    group   => $tomcat,
     source  => "puppet:///modules/openmrs/${modules_tar}",    
     mode    => '0755',
   } -> 
 
   exec { 'modules-unzip':
-    cwd     => '/usr/local',
+    cwd     => $openmrs_folder,
     command => "tar --group=${tomcat} --owner=${tomcat} -xzf ${dest_modules_tar}",    
+  } ->
+
+  file { "${openmrs_folder}/modules":
+    ensure  => directory,
+    owner   => $tomcat,
+    group   => $tomcat,
+    mode    => '0755',    
+    recurse => inf,
   } ->
 
   file { $dest_openmrs_war:
