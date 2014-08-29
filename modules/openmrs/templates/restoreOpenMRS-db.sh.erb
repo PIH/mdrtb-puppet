@@ -7,8 +7,8 @@ MYSQL_CLIENT="mysql"
 LOCAL_OPENMRS_DB_USER="root"
 LOCAL_OPENMRS_DB_PASSWORD=<%= @mysql_root_password %>
 OPENMRS_DB=<%= @openmrs_db %>
-DROP_AND_CREATE_DB_SCRIPT=<% @openmrs_create_db_sql %>
-OPENMRS_DUMP_SQL=<% @openmrs_dump_sql %>
+DROP_AND_CREATE_DB_SCRIPT=<%= @openmrs_create_db_sql %>
+OPENMRS_DUMP_SQL=<%= @openmrs_dump_sql %>
 
 LOCAL_DB_CREDENTIALS="-u $LOCAL_OPENMRS_DB_USER -p$LOCAL_OPENMRS_DB_PASSWORD"
 
