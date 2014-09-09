@@ -74,5 +74,6 @@ class pih_tomcat (
 
   service { $tomcat:
     enable  => $services_enable,
+    ensure  => "stopped",
   }
 }
