@@ -117,18 +117,17 @@ class pih_mysql {
 		content	=> template('pih_mysql/resetMysqlPassword.sh.erb'),	
 	} -> 
 
-	exec { 'update_root_password':
-		creates   => '/etc/init.d/mysql.server',  # this just means that this not execute if this mysql.server file has been created (i.e., prevents this from being run twice)
+	service { 'mysqld':
+		ensure  => running,
+		name    => 'mysql.server',
+		enable  => true,
+	} -> 
+
+	exec { 'update_root_password':		
 		path	=> $::path,
 		cwd     => $mysql_home,
 		command => "${reset_mysql_password_sh}",		
 		timeout	=> 0, 
 		logoutput	=> true,
-	} -> 
-
-	service { 'mysqld':
-		ensure  => running,
-		name    => 'mysql.server',
-		enable  => true,
-	}	 		
+	} 	 		
 }
