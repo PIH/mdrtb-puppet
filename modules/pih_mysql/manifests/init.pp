@@ -97,6 +97,11 @@ class pih_mysql {
 		target => "${mysql_home}/bin/mysql",	
 	} ->
 
+	file { '/usr/bin/mysqldump':
+		ensure => link,
+		target => "${mysql_home}/bin/mysqldump",	
+	} ->
+
 	file { '/etc/init.d/mysql.server':
 		ensure  => present,
 		source  => "${mysql_home}/support-files/mysql.server",
@@ -122,6 +127,11 @@ class pih_mysql {
 		name    => 'mysql.server',
 		enable  => true,
 	} -> 
+
+	file { "root_user_my.cnf":
+		path        => "${root_home}/.my.cnf",
+		content     => template('pih_mysql/my.cnf.pass.erb'),
+	} ->
 
 	exec { 'update_root_password':		
 		path	=> $::path,
