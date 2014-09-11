@@ -9,7 +9,15 @@ USER='<%= @backup_user %>'
 PASS='<%= @backup_password %>'
 DIR=/home/<%= @tomcat %>/backups
 
-REMOTE_DB='<%= @remote_db_user %>@<%= @remote_db_server %>:<%= @remote_backup_dir %>'
+REMOTE_USERNAME='<%= @remote_db_user %>'
+REMOTE_SERVER='<%= @remote_db_server %>'
+REMOTE_BACKUP_DIR='<%= @remote_backup_dir %>'
+
+CONNECT_TO_SERVER="$SSH_KEYS_PARAMS $REMOTE_USERNAME@$REMOTE_SERVER"
+
+REMOTE_DB="$REMOTE_USERNAME@:$REMOTE_SERVER:$REMOTE_BACKUP_DIR"
+
+ssh $CONNECT_TO_SERVER "mkdir -p ${REMOTE_BACKUP_DIR}"
 
 if [ -n "$1" ]
 then
@@ -26,7 +34,7 @@ mkdir -p ${DIR}/current
 mkdir -p ${DIR}/sequences
 
 # Dump database, encrypt and compress
-mysqldump -u${USER} -p${PASS} --opt --flush-logs --single-transaction --master-data=2 <%= @openmrs_db %> | 7z a -p${PASS} -si -t7z ${DIR}/sequences/${FILENAME} -mx9
+mysqldump -u${USER} -p${PASS} --opt --flush-logs --single-transaction <%= @openmrs_db %> | 7z a -p${PASS} -si -t7z ${DIR}/sequences/${FILENAME} -mx9
 
 # link the current to the latest dump
 rm -f ${DIR}/current/${CURRENT_FILENAME}
