@@ -74,6 +74,10 @@ class pih_tomcat (
 
   service { $tomcat:
     enable  => $services_enable,
-    ensure  => "stopped",
-  }
+    ensure  => running,
+  } ->
+
+  package { 'sysv-rc-conf' :
+    ensure => 'installed'
+  } 
 }

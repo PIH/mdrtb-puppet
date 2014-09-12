@@ -1,3 +1,20 @@
 sitename: common
 mysql_sys_user_group: mysql
 mysql_sys_user_name: mysql
+mysql_root_password: openmrs
+tomcat: tomcat6
+services_enable: true
+java_memory_parameters: '-Xmx512m -Xms512m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=128m'
+java_debug_parameters: ''
+java_profiler: ''
+openmrs_db: openmrs
+openmrs_db_user: openmrs
+openmrs_db_password: openmrs
+openmrs_auto_update_database: true
+
+backup_db_user: backup
+backup_db_password: foo
+remote_db_user: backups
+# amigo server (amigo.pih-emr.org)
+remote_db_server: 72.249.183.205
+remote_backup_dir: haiti/mdrtb/cange/db

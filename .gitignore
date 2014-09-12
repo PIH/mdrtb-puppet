@@ -1,0 +1,5 @@
+*.zip
+*.gz
+*.war
+keys
+hieradata/common.yaml
