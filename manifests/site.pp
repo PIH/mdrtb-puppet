@@ -9,5 +9,6 @@ node default {
   include pih_tomcat
   include openmrs
   include pih_mysql::backup
+  include apache2
   include newrelic
 }
