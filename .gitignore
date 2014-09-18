@@ -1,5 +1,6 @@
 *.zip
 *.gz
 *.war
+.DS_Store
 keys
 hieradata/common.yaml
