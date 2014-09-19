@@ -2,9 +2,6 @@ Log on as root
 ------------------
 $ sudo su -
 
-Install git
-------------------
-$ apt-get install git
 
 Install puppet
 ------------------
@@ -19,9 +16,12 @@ Verify puppet has been installed
 ------------------
 $ facter
 
-Copy mdrtb puppet install package
+Copy mdrtb puppet install package to /etc/puppet/
 ------------------
 cd /etc/puppet/
-cp -a /home/cioan/puppet/* .
+replace /etc/puppet/modules/openmrs/files/openmrs.tar.gz with a backup of your own openmrs database
+replace /etc/puppet/modules/openmrs/files/modules.tar.gz with a copy of your own .OpenMRS/modules folder
+replace /etc/puppet/modules/openmrs/files/openmrs.war with a your own version of openmrs.war file
+
 
 ./install.sh
