@@ -79,11 +79,6 @@ class pih_tomcat (
     source  => "puppet:///modules/pih_tomcat/logrotate",
   } ->
 
-  service { $tomcat:
-    enable  => $services_enable,
-    ensure  => running,
-  } ->
-
   exec { 'cleanup_tomcat':
     cwd     => "${tomcat_home}/bin",
     command => "${cleanup_script}",    
@@ -92,6 +87,11 @@ class pih_tomcat (
     timeout => 0, 
   } ->
 
+  service { $tomcat:
+    enable  => $services_enable,
+    ensure  => running,
+  } ->
+  
   package { 'sysv-rc-conf' :
     ensure => 'installed'
   } 

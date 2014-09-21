@@ -5,4 +5,3 @@ rm -rf ../logs/*.*
 rm -rf ../temp/*
 rm -rf ../webapps/openmrs
 rm -rf ../work/Catalina
-service tomcat6 start
