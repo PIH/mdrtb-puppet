@@ -23,5 +23,10 @@ replace /etc/puppet/modules/openmrs/files/openmrs.tar.gz with a backup of your o
 replace /etc/puppet/modules/openmrs/files/modules.tar.gz with a copy of your own .OpenMRS/modules folder
 replace /etc/puppet/modules/openmrs/files/openmrs.war with a your own version of openmrs.war file
 
+git clone --no-checkout https://github.com/PIH/mdrtb-puppet.git temp
+mv temp/.git .
+rm -rf temp
+git reset --hard HEAD
+git pull --rebase
 
 ./install.sh

@@ -1,0 +1,14 @@
+java -jar databaseexporter-1.0-SNAPSHOT-jar-with-dependencies.jar config/zanmi.json
+
+
+
+tar -zcvf dbexp.tar.gz dbexp
+a dbexp
+a dbexp/config
+a dbexp/databaseexporter-1.0-SNAPSHOT-jar-with-dependencies.jar
+a dbexp/config/zanmi.json
+
+scp dbexp.tar.gz cioan@zanmi.pih-emr.org:/home/cioan/openmrs/
+
+tar -xzvf dbexp.tar.gz
+vi config/zanmi.json

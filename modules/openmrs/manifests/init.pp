@@ -18,6 +18,7 @@ class openmrs (
   $openmrs_db_tar = "openmrs.tar.gz"
   $dest_openmrs_db = "${openmrs_db_folder}/openmrs.tar.gz"
   $openmrs_create_db_sql = "${openmrs_db_folder}/dropAndCreateDb.sql"
+  $delete_sync_tables_sql = "${openmrs_db_folder}/deleteSyncTables.sql"
   $restore_openmrs_db_sh = "${openmrs_db_folder}/restoreOpenMRS-db.sh"
   $openmrs_dump_sql = "${openmrs_db_folder}/openmrs.sql"
   $modules_tar = "modules.tar.gz" 
@@ -53,6 +54,11 @@ class openmrs (
     ensure  => present,  
     content => template('openmrs/dropAndCreateDb.sql.erb'), 
   } ->
+
+  file { $delete_sync_tables_sql: 
+    ensure  => present,    
+    source  => "puppet:///modules/openmrs/deleteSyncTables.sql",
+  } ->   
 
   file { $restore_openmrs_db_sh: 
     ensure  => present,  
