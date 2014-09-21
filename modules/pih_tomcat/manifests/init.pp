@@ -13,6 +13,7 @@ class pih_tomcat (
   $dest_tomcat_zip = "/usr/local/${tomcat_zip}"
   $version = '6.0.36'
   $tomcat_home = "/usr/local/apache-tomcat-${version}"
+  $cleanup_script = "${tomcat_home}/bin/cleanup.sh"
 
 
   notify{"java_home= ${java_home}": }
@@ -55,6 +56,12 @@ class pih_tomcat (
     owner   => $tomcat,
     group   => $tomcat,    
   } ->
+  
+  file { $cleanup_script:
+    ensure  => file,
+    source  => "puppet:///modules/pih_tomcat/cleanup.sh",    
+    mode    => '0755',
+  } -> 
 
   file { "/etc/init.d/${tomcat}":
     ensure  => file,
@@ -75,6 +82,14 @@ class pih_tomcat (
   service { $tomcat:
     enable  => $services_enable,
     ensure  => running,
+  } ->
+
+  exec { 'cleanup_tomcat':
+    cwd     => "${tomcat_home}/bin",
+    command => "${cleanup_script}",    
+    logoutput => true, 
+    returns   => [0, 1, 2],
+    timeout => 0, 
   } ->
 
   package { 'sysv-rc-conf' :
