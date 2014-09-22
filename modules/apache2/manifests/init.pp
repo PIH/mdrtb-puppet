@@ -16,10 +16,6 @@ class apache2 (
     ensure => installed,
   } ->
 
-  package { 'libapache2-mod-jk':
-    ensure => installed,
-  } -> 
-
   file { '/etc/logrotate.d/apache2':
     ensure  => file,
     content  => template('apache2/logrotate.erb'),
@@ -29,30 +25,6 @@ class apache2 (
     ensure   => $services_ensure,
     enable   => $services_enable,
   } ->
-
-  file { '/etc/apache2/workers.properties':
-    ensure  => present,
-    content => template('apache2/workers.properties.erb'),
-  } ->
-
-  file { '/etc/apache2/mods-available/jk.conf':
-    ensure => present,
-    source => 'puppet:///modules/apache2/jk.conf',
-  } ->
-
-  exec { 'enable_jk_modules':   
-    command => "a2enmod jk&&service apache2 force-reload",    
-    user    => 'root',
-    logoutput => true,
-    timeout => 0, 
-  } ->  
-
-  exec { 'optimize_for_gzip_compression':   
-    command => "a2enmod deflate&&service apache2 force-reload",    
-    user    => 'root',
-    logoutput => true,
-    timeout => 0, 
-  } ->  
 
   file { '/var/www/favicon.ico':
     ensure => file,
@@ -65,13 +37,6 @@ class apache2 (
     mode    => '0644',
     content => template('apache2/index.html.erb'),
   } ->
-
-  file { '/var/www/.htaccess':
-    ensure => file,
-    mode    => '0644',
-    source => 'puppet:///modules/apache2/var/www/.htaccess',    
-  } ->  
-
 
   file { '/etc/ssl/certs/_.pih-emr.org.crt':
     ensure => present,
@@ -89,12 +54,6 @@ class apache2 (
     source => 'puppet:///modules/apache2/sites-available/ssl',
   } ->
 
-  file { '/etc/apache2/sites-available/default':
-    ensure => file,
-    mode   => '0644',
-    source => 'puppet:///modules/apache2/sites-available/default',
-  } ->
-
   file { "${tomcat_home}/conf/server.xml":
     ensure => file,
     owner   => $tomcat,
@@ -103,8 +62,15 @@ class apache2 (
     source => 'puppet:///modules/apache2/tomcat/conf/server.xml',
   } ->  
 
+  exec { 'optimize_for_gzip_compression':   
+    command => "a2enmod deflate && service apache2 force-reload",    
+    user    => 'root',
+    logoutput => true,
+    timeout => 0, 
+  } ->  
+
   exec { 'enable apache mods':
-    command     => 'a2enmod ssl && a2ensite ssl && a2enmod rewrite && service apache2 restart',
+    command     => 'a2enmod ssl && a2ensite ssl && a2dissite default && a2enmod rewrite && service apache2 restart',
     user        => 'root',
     logoutput => true,
     timeout => 0,     
