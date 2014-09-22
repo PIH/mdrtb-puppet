@@ -12,3 +12,16 @@ scp dbexp.tar.gz cioan@zanmi.pih-emr.org:/home/cioan/openmrs/
 
 tar -xzvf dbexp.tar.gz
 vi config/zanmi.json
+** change sourceDatabaseCredentials :
+- user
+- password
+** change target Directory
+
+java -jar databaseexporter-1.0-SNAPSHOT-jar-with-dependencies.jar config/zanmi.json
+
+cd target
+mv export_2014_09_19_17_03.sql openmrs.sql
+
+tar -zcvf openmrs.tar.gz openmrs.sql 
+
+copy openmrs.tar.gz to /etc/puppet/modules/openmrs/files/
