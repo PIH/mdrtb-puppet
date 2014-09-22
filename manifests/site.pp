@@ -10,4 +10,6 @@ node default {
   include openmrs
   include pih_mysql::backup
   include newrelic
+  include mailx
+  include logging
 }
