@@ -22,3 +22,4 @@ remote_backup_dir: haiti/mdrtb/cange/db
 # These need to be configured for email
 smtp_username: foo
 smtp_userpassword: foo
+email_alerts_to: eball@pih.org
