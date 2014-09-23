@@ -18,3 +18,7 @@ remote_db_user: backups
 # amigo server (amigo.pih-emr.org)
 remote_db_server: 72.249.183.205
 remote_backup_dir: haiti/mdrtb/cange/db
+
+# These need to be configured for email
+smtp_username: foo
+smtp_userpassword: foo
