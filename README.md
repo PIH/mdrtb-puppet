@@ -33,12 +33,20 @@ git reset --hard HEAD
 git pull --rebase
 ```
 
-Replace these files
+Insert OpenMRS files
 -------------------
 * /etc/puppet/modules/openmrs/files/openmrs.tar.gz with a backup of your own openmrs database
 * /etc/puppet/modules/openmrs/files/modules.tar.gz with a copy of your own .OpenMRS/modules folder
 * /etc/puppet/modules/openmrs/files/openmrs.war with a your own version of openmrs.war file
 
+Setup email
+-----------
+Modify hieradata/common.yaml with smtmp variables:
+* smtp_username
+* smtp_userpassword
+
+Run install
+-----------
 ```
 ./install.sh
 ```
